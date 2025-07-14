@@ -2,14 +2,15 @@ import os
 from functions.get_file_content import get_file_content
 
 def write_file(working_directory, file_path, content):
-    path = os.path.join(working_directory, file_path)
-    if not path.startswith(working_directory):
+    abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
+    abs_working_dir = os.path.abspath(working_directory)
+    if not abs_file_path.startswith(abs_working_dir):
         return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
     try:
-        dirname = os.path.dirname(path)
+        dirname = os.path.dirname(abs_file_path)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
-        with open(path, "w") as f:
+        with open(abs_file_path, "w") as f:
             f.write(content)
     except Exception as e:
             return f"Error: {e}"

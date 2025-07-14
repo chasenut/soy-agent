@@ -2,14 +2,15 @@ import os
 from functions.config import *
 
 def get_file_content(working_directory, file_path):
-    path = os.path.join(working_directory, file_path)
-    if not path.startswith(working_directory):
-        return f'Error: Cannot read "{path}" as it is outside the permitted working directory'
-    if not os.path.isfile(path):
-        return f'Error: File not found or is not a regular file: "{path}"'
+    abs_working_dir = os.path.abspath(working_directory)
+    abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
+    if not abs_path.startswith(abs_working_dir):
+        return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
+    if not os.path.isfile(file_path):
+        return f'Error: File not found or is not a regular file: "{file_path}"'
     
     try:
-        with open(os.path.abspath(path), "r") as f:
+        with open(abs_file_path, "r") as f:
             file_content_string = f.read(MAX_CHARS)
             extra = f.read(1)
             if extra != '':
