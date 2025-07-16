@@ -47,7 +47,7 @@ source .venv/bin/activate
 
 Install dependencies from `uv.lock`:
 ```
-uv pip install -r uv.lock
+uv sync
 ```
 
 **Run** the project:
