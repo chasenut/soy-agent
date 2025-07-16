@@ -20,9 +20,9 @@ Soy-agent is a code ai agent capable of exploring and modifing files in specifie
 <img src="images/alwayshasbeen.jpg" alt="always-has-been-meme" style="height=300">
 </p>
 
-## Usage
+# Usage
 
-### Requirements
+## Requirements
 
 - Python 3.10+
 - [uv](https://github.com/astral-sh/uv)
@@ -37,7 +37,7 @@ It should look something like this:
 GEMINI_API_KEY="<your_api_key_here>"
 ```
 
-### Run
+## Run
 
 Create virtual environment `venv`:
 ```
@@ -58,7 +58,7 @@ uv run main.py "Hello there"
 Replace `"Hello there"` with your own prompt.
 You can add addidtional flag `--verbose` to see what's going on under the hood.
 
-### Info
+## Info
 
 Agent is **limited** to specified working directory (see `./config.py` -> `WORKING_DIR`)
 for safety reasons. Default is set to `./calculator`.
