@@ -1,5 +1,6 @@
 import os
 import subprocess
+from google.genai import types
 
 def run_python_file(working_directory, file_path):
     abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
@@ -25,3 +26,19 @@ def run_python_file(working_directory, file_path):
         return output
     except Exception as e:
         return f"Error: executing Python file: {e}"
+
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Runs specified by given path python file. The function run has a timeout of 30 seconds. It literally runs 'python3 <file_path>'.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to a python file that will be run, relative to the working directory.",
+            ),
+        },
+    ),
+)
+

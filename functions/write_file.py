@@ -1,5 +1,6 @@
 import os
 from functions.get_file_content import get_file_content
+from google.genai import types
 
 def write_file(working_directory, file_path, content):
     abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
@@ -16,3 +17,22 @@ def write_file(working_directory, file_path, content):
             return f"Error: {e}"
     return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
     
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Writes a new content to a file (and makes the file if it doesn't exist) overwritting the old one.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to a file to write to, relative to the working directory.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="The whole new content of a file",
+            ),
+        },
+    ),
+)
+

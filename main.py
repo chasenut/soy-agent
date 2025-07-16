@@ -4,29 +4,59 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-load_dotenv()
-api_key = os.environ.get("GEMINI_API_KEY")
-
-client = genai.Client(api_key=api_key)
-
+from prompts import system_prompt
+from call_function import call_function, available_functions
+from config import MODEL_NAME
 
 def main():
-    if len(sys.argv) < 2:
+    load_dotenv()
+     
+    verbose = "--verbose" in sys.argv
+    args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
+    
+    if not args:
         print("Error, no prompt provided")
         sys.exit(1)
-    model = "gemini-2.0-flash-001"
-    user_prompt = sys.argv[1]
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    client = genai.Client(api_key=api_key)
+
+    user_prompt = " ".join(args)
+
+    if verbose:
+        print(f"User prompt: {user_prompt}\n")
+
     messages = [
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
-    generated_content_response = client.models.generate_content(model=model, contents=messages)
+    
+    generate_content(client, messages, verbose)
+
+def generate_content(client, messages, verbose):
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=messages,
+        config=types.GenerateContentConfig(system_instruction=system_prompt,
+                                           tools=[available_functions]),
+    )
+
+    if verbose:
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+
+    function_calls = response.function_calls
+    function_responses = []
+    for function_call_part in response.function_calls:
+        function_call_result = call_function(function_call_part, verbose)
+        if (
+            not function_call_result.parts
+            or not function_call_result.parts[0].function_response
+        ):
+            raise Exception("Empty function call result")
+        if verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
+            function_responses.append(function_call_result.parts[0])
 
 
-    print(generated_content_response.text)
-    if len(sys.argv) > 2 and sys.argv[2] == "--verbose":
-        print(f"User prompt: {user_prompt}")
-        print(f"Prompt tokens: {generated_content_response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {generated_content_response.usage_metadata.candidates_token_count}")
-        
 if __name__ == "__main__":
     main()
